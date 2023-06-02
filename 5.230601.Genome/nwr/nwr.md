@@ -110,7 +110,7 @@ nwr member "Homo"
 # 输出文件为四列：
 # 第一列为ID tax_id
 # 第二列是名称 sci_name
-# 第三列是rank，等级（中还是亚种）
+# 第三列是rank，等级（种还是亚种）
 # 第四列是划分 division
 
 1425170 Homo heidelbergensis  species Primates
