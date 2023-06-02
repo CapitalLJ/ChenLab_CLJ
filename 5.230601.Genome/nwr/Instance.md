@@ -103,6 +103,8 @@ cat groups.tsv |
 
 #### Example 2：find accessions of a species（Staphylococcus capitis - 29388 - 头状葡萄球菌）
 
+下面的步骤中涉及到SQLite的使用，可以参考[此页面](./SQLite.md)
+
 ```shell
 nwr info "Staphylococcus capitis"
 
