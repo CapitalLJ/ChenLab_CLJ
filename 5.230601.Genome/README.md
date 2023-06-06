@@ -520,7 +520,6 @@ rm raw*.*sv
 
 <!-- #region -->
 <!-- 根据Bacteria.assembly.tsv进行基因组下载 -->
-
 ```shell
 cd ~/data/Bacteria
 
@@ -621,7 +620,6 @@ cat ASSEMBLY/temp.list |
 # Remove ASSEMBLY/Aerom_hydrop_GCF_022700835_1/.GCF_022700835.1_ASM2270083v1_protein.gpff.gz.lfS04j
 
 ```
-
 <!-- #endregion -->
 
 
