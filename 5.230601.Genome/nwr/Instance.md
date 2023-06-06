@@ -117,7 +117,7 @@ nwr info "Staphylococcus capitis"
 
 nwr member 29388
 
-# #tax_id sci_name        rank    division
+# tax_id sci_name        rank    division
 # 29388   Staphylococcus capitis  species Bacteria
 # 1441378 Staphylococcus capitis AYP1020  strain  Bacteria
 # 1296619 Staphylococcus capitis CR01     strain  Bacteria
