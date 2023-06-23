@@ -190,3 +190,35 @@ echo "
 ```
 
 
+
+
+
+cat mash.dist_full.tsv |
+    Rscript -e '
+        library(readr);
+        library(tidyr);
+        library(ape);
+        pair_dist <- read_tsv(file("stdin"), col_names=F);
+        tmp <- pair_dist %>%
+            pivot_wider( names_from = X2, values_from = X3, values_fill = list(X3 = 1.0) )
+        tmp <- as.matrix(tmp)
+        mat <- tmp[,-1]
+        rownames(mat) <- tmp[,1]
+
+        dist_mat <- as.dist(mat)
+        clusters <- hclust(dist_mat, method = "ward.D2")
+        tree <- as.phylo(clusters)
+        write.tree(phy=tree, file="tree.nwk")
+
+        group <- cutree(clusters, h=0.5) # k=3
+        groups <- as.data.frame(group)
+        groups$ids <- rownames(groups)
+        rownames(groups) <- NULL
+        groups <- groups[order(groups$group), ]
+        write_tsv(groups, "groups.tsv")
+    '
+
+
+
+
+
