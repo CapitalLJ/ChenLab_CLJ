@@ -1,0 +1,182 @@
+```shell
+cd ~/data/Fungi/summary
+cat collect.pass.tsv | tsv-filter -H --not-blank RefSeq_category | grep -v Aspergillus | grep -v "Candida albicans" | grep -v "Candida tropicalis" | grep -v "Candida parapsilosis" | grep -v "Nakaseomyces glabratus" | cut -f 1 > ~/llj/blast_set/list1.txt
+
+cat collect.pass.tsv | tsv-filter -H --not-blank RefSeq_category | grep Aspergillus | cut -f 1 > ~/llj/blast_set/Aspergillus.txt
+
+cat collect.pass.tsv | tsv-filter -H --not-blank RefSeq_category | grep -w "Candida albicans" | cut -f 1 > ~/llj/blast_set/Candida-albicans.txt
+
+cat collect.pass.tsv | tsv-filter -H --not-blank RefSeq_category | grep -w "Candida parapsilosis" | cut -f 1 > ~/llj/blast_set/Candida-parapsilosis.txt
+
+cat collect.pass.tsv | tsv-filter -H --not-blank RefSeq_category | grep -w "Candida tropicalis" | cut -f 1 > ~/llj/blast_set/Candida-tropicalis.txt
+
+cat collect.pass.tsv | tsv-filter -H --not-blank RefSeq_category | grep -w "Nakaseomyces glabratus" | cut -f 1 > ~/llj/blast_set/Nakaseomyces-glabratus.txt
+
+cd ~/llj/blast_set
+
+for i in $(cat list1.txt);do
+    cd /share/home/wangq/llj/blast_set
+    file=$(find /share/home/wangq/data/Fungi/ASSEMBLY -type d -name "${i}")
+    cd ${file}
+    echo "==> ${i}"
+    gzip -dc -f *.genomic.fna.gz > database/database1/${i}.fa
+    cd /share/home/wangq/llj/blast_set
+done
+
+
+
+
+```
+
+```shell
+# 以can_tro为例
+cd ~/llj/Candida/groups/Can_tro/Can_tro_refined
+
+for i in $(ls);do
+    name = "${i%%.gz}"
+    gzip -f -dc ${i} > ~/llj/blast_set/Candida/Can_tro/sequence/${name}
+done
+
+
+
+
+
+
+~/llj/blast_set/Candida/Can_tro/sequence
+
+perl $path/../process_blast.pl -i $query -d $database -o $outdir/$prefix.txt
+perl $path/../read_blast_to_yml.pl -i $outdir/$prefix.txt  --length 30 --identity 90 -o $outdir/$prefix.yml
+perl $path/../deal_yml.pl -f $query -y $outdir/$prefix.yml --get_no_match -o $outdir/$prefix.no.yml
+perl $path/../extract_seq.pl -f $query -y $outdir/$prefix.no.yml -o $outdir/$prefix.out.fa
+
+
+#!/usr/bin bash
+for i in $(ls input/x*);do
+
+    parallel -j 24 "
+
+        for n in $(cat ~/llj/blast_set/list1.txt);do
+            echo -e "perl ~/llj/blast_set/process_blast.pl -i input/NW_0030200{} -d database/database1/${n}/${n}.fa -o tmp/NW_0030200{}-${n}.txt"
+
+
+            echo -e "perl ~/llj/blast_set/read_blast_to_yml.pl -i tmp/NW_0030200{}-${n}.txt --length 30 --identity 90 -o tmp/NW_0030200{}-${n}.yml"
+
+
+            echo -e "perl ~/llj/blast_set/deal_yml.pl -f input/NW_0030200{} -y tmp/NW_0030200{}-${n}.yml --get_no_match -o tmp/NW_0030200{}-${n}.no.yml"
+
+
+            echo -e "perl ~/llj/blast_set/extract_seq.pl -f input/NW_0030200{} -y tmp/NW_0030200{}-${n}.no.yml -o tmp/NW_0030200{}-${n}.out.fa"
+        done
+
+    " ::: $(cat ${i} | perl -p -e 's/NW_0030200//')
+
+done
+
+
+
+        echo -e "perl ~/llj/blast_set/process_blast.pl -i input/{} -d database/database1/${n}/${n}.fa -o tmp/{}-${n}.txt"
+        perl ~/llj/blast_set/process_blast.pl -i input/{} -d database/database1/${n}/${n}.fa -o tmp/{}-${n}.txt
+
+        echo -e "perl ~/llj/blast_set/read_blast_to_yml.pl -i tmp/{}-${n}.txt --length 30 --identity 90 -o tmp/{}-${n}.yml"
+        perl ~/llj/blast_set/read_blast_to_yml.pl -i tmp/{}-${n}.txt --length 30 --identity 90 -o tmp/{}-${n}.yml
+
+        echo -e "perl ~/llj/blast_set/deal_yml.pl -f input/{} -y tmp/{}-${n}.yml --get_no_match -o tmp/{}-${n}.no.yml"
+        perl ~/llj/blast_set/deal_yml.pl -f input/{} -y tmp/{}-${n}.yml --get_no_match -o tmp/{}-${n}.no.yml
+
+        echo -e "perl ~/llj/blast_set/extract_seq.pl -f input/{} -y tmp/{}-${n}.no.yml -o tmp/{}-${n}.out.fa"
+        perl ~/llj/blast_set/extract_seq.pl -f input/{} -y tmp/{}-${n}.no.yml -o tmp/{}-${n}.out.fa
+
+
+for i in $(ls input/x*);do
+
+    parallel -j 24 "
+        bash blast.sh {}
+    " ::: $(cat ${i})
+
+done
+
+
+filename="$1"
+
+# 检查文件是否存在
+if [ -f "$filename" ]; then
+    echo "文件存在：$filename"
+else
+    echo "文件不存在：$filename"
+fi
+rm tmp/$filename.out.fa
+for n in $(cat ~/llj/blast_set/list1.txt);do
+    if [ ! -e "tmp/$filename.out.fa" ]; then
+        "perl ~/llj/blast_set/process_blast.pl -i input/$filename -d database/database1/${n}/${n}.fa -o tmp/$filename-${n}.txt"
+        "perl ~/llj/blast_set/read_blast_to_yml.pl -i tmp/$filename-${n}.txt --length 30 --identity 90 -o tmp/$filename-${n}.yml"
+        "perl ~/llj/blast_set/deal_yml.pl -f input/$filename -y tmp/$filename-${n}.yml --get_no_match -o tmp/$filename-${n}.no.yml"    
+        "perl ~/llj/blast_set/extract_seq.pl -f input/$filename -y tmp/$filename-${n}.no.yml -o tmp/$filename.out.fa"
+
+    else 
+        "perl ~/llj/blast_set/process_blast.pl -i tmp/$filename.out.fa -d database/database1/${n}/${n}.fa -o tmp/$filename-${n}.txt"
+        "perl ~/llj/blast_set/read_blast_to_yml.pl -i tmp/$filename-${n}.txt --length 30 --identity 90 -o tmp/$filename-${n}.yml"
+        "perl ~/llj/blast_set/deal_yml.pl -f input/$filename -y tmp/$filename-${n}.yml --get_no_match -o tmp/$filename-${n}.no.yml"    
+        "perl ~/llj/blast_set/extract_seq.pl -f input/$filename -y tmp/$filename-${n}.no.yml -o tmp/$filename.out.fa"
+    fi   
+    if [ ! -s "tmp/$filename.out.fa" ]; then
+        echo "${n}中存在共有序列"
+        break  # 结束 for 循环
+    fi  
+done
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+```
+
+```perl
+#!/usr/bin/perl
+
+# 这个脚本用于对输入文件进行分割，用来处理mulit之后的maf文件来进行下一步比对
+# perl split.pl input output_ output-dir
+# 参数分别是输入文件名称，输出文件前缀和输出文件路径
+
+
+use strict;
+use warnings;
+use File::Spec;
+
+sub split_file {
+    my ($input_file, $output_prefix, $output_dir) = @_;
+
+    open(my $fh, '<', $input_file) or die "无法打开输入文件: $!";
+    local $/ = "\n\n";  # 设置段落分隔符为两个换行符
+
+    my $i = 0;
+    while (my $module = <$fh>) {
+        chomp($module);
+        my $output_file = sprintf("%s%03d", $output_prefix, $i);
+        $output_file = File::Spec->catfile($output_dir, $output_file);
+        open(my $out_fh, '>', $output_file) or die "无法创建输出文件: $!";
+        print $out_fh $module;
+        close($out_fh);
+        $i++;
+    }
+    close($fh);
+
+    print "成功拆分文件为 $i 个文件。\n";
+}
+
+# 从命令行参数读取输入文件路径、输出文件前缀和输出文件夹路径
+my $input_file = $ARGV[0];
+my $output_prefix = $ARGV[1];
+my $output_dir = $ARGV[2];
+
+split_file($input_file, $output_prefix, $output_dir);
+
+```

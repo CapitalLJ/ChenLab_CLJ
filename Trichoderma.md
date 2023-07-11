@@ -758,9 +758,7 @@ bash MinHash/abnormal.sh
 # #    log_debug "${SPECIES}"
 
 #     # Number of assemblies >= 2
-#     if [[ ! -s "${SPECIES}/mash.dist.tsv" ]]; then
-#         continue
-#     fi
+#     
 
 #     D_MAX=$(
 #         cat "${SPECIES}/mash.dist.tsv" |

@@ -65,7 +65,8 @@ nwr member Aspergillaceae -r genus |
     sed '1d' |
     sort -n -k1,1 \
     > genus.list.tsv
-
+    
+# 25 genus.list.tsv
 
 wc -l genus.list.tsv
 
@@ -241,7 +242,7 @@ Download and check
 
 ```shell
 
-nwr template summary/Aspergillus.assembly.tsv --asss
+nwr template summary/Aspergillus.assembly.tsv --ass
 
 bash ASSEMBLY/rsync.sh
 
@@ -509,71 +510,151 @@ faops size Protein/fungi61.*.fa |
 
 Groups and targets
 ```shell
+
+
+
+# ARRAY=(
+#     'A_fum::A_fumigatus_0040679185_AFU_30_06_GCA_029618285_1' # 17  烟曲霉初筛
+#     'A_fla::A_flavus_2017_Yazoo_S7_GCA_003953525_1' # 7 黄曲霉
+# )
+
 ARRAY=(
-    'A_acu::A_aculeati_GCA_016748025_1' # 1
-    'A_ter::A_ter_45A_GCA_001630395_1' # 2
-    'A_wes::A_mel_CBS_546_65_GCF_016097325_1' # 3
-    'A_tam_pse::A_cae_CBS_763_97_GCF_009193585_1' # 4
-    'A_amo_syd_vers::A_puu_AS33_GCA_026319425_1' # 5
-    'A_chev_cri::A_cri_AC_1_GCA_020466005_1' # 6
-    'A_flavus_ory_paras_soj::A_ory_TK_48_GCA_009687065_1' # 7
-    'A_asp::A_asp_NRRL_4770_GCA_027569075_1' # 8
-    'A_nig_wel::A_nig_CBS_113_50_GCA_023134475_1' # 9  #nig在group9和10中都存在
-    'A_luc_nig_tub::A_luc_TK_87_GCA_016860325_1' # 10
-    'A_cal::A_cal_FKII_L2_CM_DR1_GCA_022814525_1' # 11
-
-
-
-
-    'A_wes::A_mel_CBS_546_65_GCF_016097325_1' # 3
-    'A_wes::A_mel_CBS_546_65_GCF_016097325_1' # 3
-    'A_wes::A_mel_CBS_546_65_GCF_016097325_1' # 3
-    'A_wes::A_mel_CBS_546_65_GCF_016097325_1' # 3
-    'A_wes::A_mel_CBS_546_65_GCF_016097325_1' # 3
-    'A_wes::A_mel_CBS_546_65_GCF_016097325_1' # 3
-    'A_wes::A_mel_CBS_546_65_GCF_016097325_1' # 3
-    'A_wes::A_mel_CBS_546_65_GCF_016097325_1' # 3
-    'A_wes::A_mel_CBS_546_65_GCF_016097325_1' # 3
-    'A_wes::A_mel_CBS_546_65_GCF_016097325_1' # 3
-    'A_wes::A_mel_CBS_546_65_GCF_016097325_1' # 3
-    'A_wes::A_mel_CBS_546_65_GCF_016097325_1' # 3
-    'A_wes::A_mel_CBS_546_65_GCF_016097325_1' # 3
-    'A_wes::A_mel_CBS_546_65_GCF_016097325_1' # 3
-    'A_wes::A_mel_CBS_546_65_GCF_016097325_1' # 3
-    'A_wes::A_mel_CBS_546_65_GCF_016097325_1' # 3
-    'A_wes::A_mel_CBS_546_65_GCF_016097325_1' # 3
-    'A_wes::A_mel_CBS_546_65_GCF_016097325_1' # 3
-    'A_wes::A_mel_CBS_546_65_GCF_016097325_1' # 3
-    'A_wes::A_mel_CBS_546_65_GCF_016097325_1' # 3
-    'A_wes::A_mel_CBS_546_65_GCF_016097325_1' # 3
-    'A_wes::A_mel_CBS_546_65_GCF_016097325_1' # 3
-    'A_wes::A_mel_CBS_546_65_GCF_016097325_1' # 3
-    'A_wes::A_mel_CBS_546_65_GCF_016097325_1' # 3
-    'A_wes::A_mel_CBS_546_65_GCF_016097325_1' # 3
-    'A_wes::A_mel_CBS_546_65_GCF_016097325_1' # 3
-    'A_wes::A_mel_CBS_546_65_GCF_016097325_1' # 3
-    'A_wes::A_mel_CBS_546_65_GCF_016097325_1' # 3
-    'A_wes::A_mel_CBS_546_65_GCF_016097325_1' # 3
-    'A_wes::A_mel_CBS_546_65_GCF_016097325_1' # 3
-    'A_wes::A_mel_CBS_546_65_GCF_016097325_1' # 3
-    'A_wes::A_mel_CBS_546_65_GCF_016097325_1' # 3
-    'A_wes::A_mel_CBS_546_65_GCF_016097325_1' # 3
-    'A_wes::A_mel_CBS_546_65_GCF_016097325_1' # 3
-    'A_wes::A_mel_CBS_546_65_GCF_016097325_1' # 3
-    'A_wes::A_mel_CBS_546_65_GCF_016097325_1' # 3
-    'A_wes::A_mel_CBS_546_65_GCF_016097325_1' # 3
-    'A_wes::A_mel_CBS_546_65_GCF_016097325_1' # 3
-    'A_wes::A_mel_CBS_546_65_GCF_016097325_1' # 3
-    'A_wes::A_mel_CBS_546_65_GCF_016097325_1' # 3
-    'A_wes::A_mel_CBS_546_65_GCF_016097325_1' # 3
-    'A_wes::A_mel_CBS_546_65_GCF_016097325_1' # 3
-    'A_wes::A_mel_CBS_546_65_GCF_016097325_1' # 3
-    'A_wes::A_mel_CBS_546_65_GCF_016097325_1' # 3
-    'A_wes::A_mel_CBS_546_65_GCF_016097325_1' # 3
-    'A_wes::A_mel_CBS_546_65_GCF_016097325_1' # 3
-    'A_wes::A_mel_CBS_546_65_GCF_016097325_1' # 3
-    'T_atrov_koningio::T_atrov_IMI_206040_GCF_000171015_1' # 6
-    'T_cit_lon_ree::T_ree_QM6a_GCF_000167675_1' # 7
-    'T_vire::T_vire_Gv29_8_GCF_000170995_1' # 8
+    'Aspergillus::A_nid_SP_2605_48_GCA_011074995_1'
 )
+
+SERIAL=101
+for item in "${ARRAY[@]}" ; do
+    GROUP_NAME="${item%%::*}"
+    TARGET_NAME="${item##*::}"
+
+    SERIAL=$((SERIAL + 1))
+    if [ "$GROUP_NAME" = "Aspergillus2" ]; then
+        cat ../ASSEMBLY/collect.pass.tsv |
+        tsv-filter -H --not-blank RefSeq_category |
+        cut -f 1 ../ASSEMBLY/collect.pass.tsv | grep  ^A_ > T.tmp
+        cat T.tmp |
+            tsv-uniq |
+            tsv-join -f ../ASSEMBLY/url.tsv -k 1 -a 3 \
+            > ${GROUP_NAME}
+    fi
+
+    COUNT=$(cat ${GROUP_NAME} | wc -l )
+
+    echo -e "${SERIAL}\t${GROUP_NAME}\t${TARGET_NAME}\t${COUNT}" >> group_target.tsv
+
+done
+
+cat taxon/group_target.tsv |
+    sed -e '1d' |
+    parallel --colsep '\t' --no-run-if-empty --linebuffer -k -j 1 '
+        echo -e "==> Group: [{2}]\tTarget: [{3}]\n"
+
+        egaz template \
+            Genome/{3} \
+            $(cat taxon/{2} | cut -f 1 | grep -v -x "{3}" | xargs -I[] echo "Genome/[]") \
+            --multi -o groups/{2}/ \
+            --tree MinHash/tree.nwk \
+            --parallel 48 -v
+    '
+
+
+
 ```
+```shell
+cat taxon/group_target.tsv |
+    sed -e '1d' |
+    parallel --colsep '\t' --no-run-if-empty --linebuffer -k -j 1 '
+        echo -e "==> Group: [{2}]\tTarget: [{3}]\n"
+
+    '
+
+
+    egaz template \
+    ASSEMBLY \
+    --prep -o Genome \
+    $( cat taxon/group_target.tsv |
+        sed -e '1d' | cut -f 3 |
+        parallel -j 1 echo " --perseq {} "
+    ) \
+    $( cat taxon/complete-genome.tsv |
+        sed '1d' | cut -f 1 |
+        parallel -j 1 echo " --perseq {} "
+    ) \
+    --min 5000 --about 5000000 \
+    -v --repeatmasker "--parallel 24"
+
+```
+
+```shell
+
+for n in \
+    $(cat taxon/group_target.tsv | sed -e '1d' | cut -f 3 ) \
+    $( cat taxon/Aspergillus | cut -f 1 ) \
+    ; do
+    FILE_GFF=$(find ASSEMBLY -type f -name "*_genomic.gff.gz" | grep "${n}")
+    FILE_GFF2=$(find ASSEMBLY -type f -name "*_genomic.gbff.gz" | grep "${n}")
+    if [ -z "$FILE_GFF" ]; then
+        gzip -dc -f ${FILE_GFF2} > tmp.gbff
+        perl ~/llj/Scripts/bp_genebank2gff3.pl tmp.gbff > tmp.log
+        awk -F '\t' '{ OFS=FS; if (!/^#/ && $8 == "1") $8 = "."; print $0 }' tmp.gbff.gff > Genome/${n}/chr.gff
+    else
+        echo >&2 "==> Processing ${n}/${FILE_GFF}"
+        gzip -dc -f ${FILE_GFF} > Genome/${n}/chr.gff
+    fi
+done
+vim
+
+
+for n in \
+    $(cat taxon/group_target.tsv | sed -e '1d' | cut -f 3 ) \
+    $( cat taxon/Aspergillus | cut -f 1 ) \
+    ; do
+    find Genome -type f -name "*.rm.out" | grep "${n}" > list
+done
+
+
+    echo >&2 "==> Processing ${n}"
+
+    file="${FILE_GFF##*/}"  # 获取路径中的最后一个部分（文件名）
+    filename1="${file%.*}"  # 去除文件扩展名部分
+    filename2="${filename1%.*}"
+    echo ${filename2}
+done
+
+
+
+
+```shell
+
+
+egaz template \
+    ASSEMBLY \
+    --prep -o Genome \
+    $( cat taxon/test |
+        parallel -j 1 echo " --perseq {} "
+    ) \
+    --min 5000 --about 5000000 \
+    -v --repeatmasker "--parallel 16"
+
+
+A_cal_FKI_L3_BK_DRAB1_GCA_022813285_1
+
+
+cat taxon/group_target.tsv |
+    sed -e '1d' |
+    parallel --colsep '\t' --no-run-if-empty --linebuffer -k -j 1 '
+        echo -e "==> Group: [{2}]\tTarget: [{3}]\n"
+
+        egaz template \
+            Genome/{3} \
+            $(cat taxon/{2} | cut -f 1 | grep -v -x "{3}" | xargs -I[] echo "Genome/[]") \
+            --multi -o groups/{2}/ \
+            --tree MinHash/tree.nwk \
+            --parallel 24 -v
+    '
+```
+
+
+
+
+<!-- Aspergillus nomiae 诺米亚曲霉仅有一个一个基因组组装，没有被选入 -->
