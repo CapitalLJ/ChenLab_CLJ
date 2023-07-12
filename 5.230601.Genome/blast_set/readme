@@ -14,6 +14,7 @@ cat collect.pass.tsv | tsv-filter -H --not-blank RefSeq_category | grep -w "Naka
 
 cd ~/llj/blast_set
 
+
 for i in $(cat list1.txt);do
     cd /share/home/wangq/llj/blast_set
     file=$(find /share/home/wangq/data/Fungi/ASSEMBLY -type d -name "${i}")
@@ -23,7 +24,7 @@ for i in $(cat list1.txt);do
     cd /share/home/wangq/llj/blast_set
 done
 
-
+###Saro_oryz_JCM_12450_GCA_001972265_1 (Sarocladium_oryzae)组装开头的兼并碱基被删去
 
 
 ```
@@ -36,6 +37,7 @@ for i in $(ls);do
     name = "${i%%.gz}"
     gzip -f -dc ${i} > ~/llj/blast_set/Candida/Can_tro/sequence/${name}
 done
+
 
 
 
@@ -125,8 +127,61 @@ for n in $(cat ~/llj/blast_set/list1.txt);do
 done
 
 
+cd ~/llj/blast_set/Candida
+
+ls
+# Can_alb  Can_gla  Can_par  Can_tro
+
+for i in Can_alb Can_gla Can_par ;do
+    mkdir -p ${i}/sequence ${i}/input ${i}/output ${i}/log ${i}/tmp
+    for n in $(ls ~/llj/Candida/groups/${i}/${i}_refined);do
+        name="${n%.*}"
+        gzip -dc -f ~/llj/Candida/groups/${i}/${i}_refined/${n} > ${i}/sequence/${name}
+    done
+done
 
 
+for i in Can_alb Can_gla Can_par ;do
+    for n in $(ls ${i}/sequence);do
+    name=$(basename "$n" .maf.gz.fas)
+        perl ../split.pl ${i}/sequence/${n} ${name}_ ${i}/input
+    done
+done
+
+
+
+for i in Can_alb Can_gla Can_par ;do
+    rm ${i}/input/*
+done
+
+
+for i in Can_alb Can_gla Can_par ;do
+    cp Can_tro/1-blast.sh ${i}/
+    cp Can_tro/blast-all.sh ${i}/
+    cp Can_tro/input/1.sh ${i}/input/
+done
+
+for i in Can_alb Can_gla Can_par ;do
+    ls ${i}/input/ > ${i}/input/list.txt
+    sed -i "1d" ${i}/input/list.txt
+done 
+
+for i in Can_alb Can_gla Can_par ;do
+    cd ${i}/input
+    bash 1.sh
+    cd ../..
+done
+
+
+# =====================开始比对
+# Can_par
+cd ~/llj/blast_set/Candida/Can_par
+
+for i in $(ls input/x*);do
+
+     bsub -q mpi -n 24 bash 1-blast.sh ${i}
+
+done
 
 
 
@@ -180,3 +235,12 @@ my $output_dir = $ARGV[2];
 split_file($input_file, $output_prefix, $output_dir);
 
 ```
+
+
+
+
+
+
+
+
+
