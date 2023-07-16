@@ -3,6 +3,7 @@ cd ~/data/Fungi/summary
 cat collect.pass.tsv | tsv-filter -H --not-blank RefSeq_category | grep -v Aspergillus | grep -v "Candida albicans" | grep -v "Candida tropicalis" | grep -v "Candida parapsilosis" | grep -v "Nakaseomyces glabratus" | cut -f 1 > ~/llj/blast_set/list1.txt
 
 cat collect.pass.tsv | tsv-filter -H --not-blank RefSeq_category | grep Aspergillus | cut -f 1 > ~/llj/blast_set/Aspergillus.txt
+# 116
 
 cat collect.pass.tsv | tsv-filter -H --not-blank RefSeq_category | grep -w "Candida albicans" | cut -f 1 > ~/llj/blast_set/Candida-albicans.txt
 
@@ -11,6 +12,9 @@ cat collect.pass.tsv | tsv-filter -H --not-blank RefSeq_category | grep -w "Cand
 cat collect.pass.tsv | tsv-filter -H --not-blank RefSeq_category | grep -w "Candida tropicalis" | cut -f 1 > ~/llj/blast_set/Candida-tropicalis.txt
 
 cat collect.pass.tsv | tsv-filter -H --not-blank RefSeq_category | grep -w "Nakaseomyces glabratus" | cut -f 1 > ~/llj/blast_set/Nakaseomyces-glabratus.txt
+
+cat collect.pass.tsv | grep "Candida" | grep -v "albicans" | grep -v "parapsilosis" | grep -v "tropicalis" | grep -v "glabratus" > ~/llj/blast_set/Candida.txt
+# 229
 
 cd ~/llj/blast_set
 
@@ -58,16 +62,17 @@ for i in $(ls input/x*);do
     parallel -j 24 "
 
         for n in $(cat ~/llj/blast_set/list1.txt);do
-            echo -e "perl ~/llj/blast_set/process_blast.pl -i input/NW_0030200{} -d database/database1/${n}/${n}.fa -o tmp/NW_0030200{}-${n}.txt"
+            echo -e "perl ~/llj/blast_set/process_blast.pl -i input/{} -d database/database1/${n}/${n}.fa -o tmp/{}-${n}.txt"
+            perl ~/llj/blast_set/process_blast.pl -i input/{} -d database/database1/${n}/${n}.fa -o tmp/{}-${n}.txt
 
+            echo -e "perl ~/llj/blast_set/read_blast_to_yml.pl -i tmp/{}-${n}.txt --length 30 --identity 90 -o tmp/{}-${n}.yml"
+            perl ~/llj/blast_set/read_blast_to_yml.pl -i tmp/{}-${n}.txt --length 30 --identity 90 -o tmp/{}-${n}.yml
 
-            echo -e "perl ~/llj/blast_set/read_blast_to_yml.pl -i tmp/NW_0030200{}-${n}.txt --length 30 --identity 90 -o tmp/NW_0030200{}-${n}.yml"
+            echo -e "perl ~/llj/blast_set/deal_yml.pl -f input/{} -y tmp/{}-${n}.yml --get_no_match -o tmp/{}-${n}.no.yml"
+            perl ~/llj/blast_set/deal_yml.pl -f input/{} -y tmp/{}-${n}.yml --get_no_match -o tmp/{}-${n}.no.yml
 
-
-            echo -e "perl ~/llj/blast_set/deal_yml.pl -f input/NW_0030200{} -y tmp/NW_0030200{}-${n}.yml --get_no_match -o tmp/NW_0030200{}-${n}.no.yml"
-
-
-            echo -e "perl ~/llj/blast_set/extract_seq.pl -f input/NW_0030200{} -y tmp/NW_0030200{}-${n}.no.yml -o tmp/NW_0030200{}-${n}.out.fa"
+            echo -e "perl ~/llj/blast_set/extract_seq.pl -f input/{} -y tmp/{}-${n}.no.yml -o tmp/{}-${n}.out.fa"
+            perl ~/llj/blast_set/extract_seq.pl -f input/{} -y tmp/{}-${n}.no.yml -o tmp/{}-${n}.out.fa
         done
 
     " ::: $(cat ${i} | perl -p -e 's/NW_0030200//')
@@ -75,18 +80,6 @@ for i in $(ls input/x*);do
 done
 
 
-
-        echo -e "perl ~/llj/blast_set/process_blast.pl -i input/{} -d database/database1/${n}/${n}.fa -o tmp/{}-${n}.txt"
-        perl ~/llj/blast_set/process_blast.pl -i input/{} -d database/database1/${n}/${n}.fa -o tmp/{}-${n}.txt
-
-        echo -e "perl ~/llj/blast_set/read_blast_to_yml.pl -i tmp/{}-${n}.txt --length 30 --identity 90 -o tmp/{}-${n}.yml"
-        perl ~/llj/blast_set/read_blast_to_yml.pl -i tmp/{}-${n}.txt --length 30 --identity 90 -o tmp/{}-${n}.yml
-
-        echo -e "perl ~/llj/blast_set/deal_yml.pl -f input/{} -y tmp/{}-${n}.yml --get_no_match -o tmp/{}-${n}.no.yml"
-        perl ~/llj/blast_set/deal_yml.pl -f input/{} -y tmp/{}-${n}.yml --get_no_match -o tmp/{}-${n}.no.yml
-
-        echo -e "perl ~/llj/blast_set/extract_seq.pl -f input/{} -y tmp/{}-${n}.no.yml -o tmp/{}-${n}.out.fa"
-        perl ~/llj/blast_set/extract_seq.pl -f input/{} -y tmp/{}-${n}.no.yml -o tmp/{}-${n}.out.fa
 
 
 for i in $(ls input/x*);do
@@ -98,33 +91,37 @@ for i in $(ls input/x*);do
 done
 
 
-filename="$1"
+# =============================================================================================
+# blast.sh
+# filename="$1"
 
-# 检查文件是否存在
-if [ -f "$filename" ]; then
-    echo "文件存在：$filename"
-else
-    echo "文件不存在：$filename"
-fi
-rm tmp/$filename.out.fa
-for n in $(cat ~/llj/blast_set/list1.txt);do
-    if [ ! -e "tmp/$filename.out.fa" ]; then
-        "perl ~/llj/blast_set/process_blast.pl -i input/$filename -d database/database1/${n}/${n}.fa -o tmp/$filename-${n}.txt"
-        "perl ~/llj/blast_set/read_blast_to_yml.pl -i tmp/$filename-${n}.txt --length 30 --identity 90 -o tmp/$filename-${n}.yml"
-        "perl ~/llj/blast_set/deal_yml.pl -f input/$filename -y tmp/$filename-${n}.yml --get_no_match -o tmp/$filename-${n}.no.yml"    
-        "perl ~/llj/blast_set/extract_seq.pl -f input/$filename -y tmp/$filename-${n}.no.yml -o tmp/$filename.out.fa"
+# # 检查文件是否存在
+# if [ -f "$filename" ]; then
+#     echo "文件存在：$filename"
+# else
+#     echo "文件不存在：$filename"
+# fi
+# rm tmp/$filename.out.fa
+# for n in $(cat ~/llj/blast_set/list1.txt);do
+#     if [ ! -e "tmp/$filename.out.fa" ]; then
+#         "perl ~/llj/blast_set/process_blast.pl -i input/$filename -d database/database1/${n}/${n}.fa -o tmp/$filename-${n}.txt"
+#         "perl ~/llj/blast_set/read_blast_to_yml.pl -i tmp/$filename-${n}.txt --length 30 --identity 90 -o tmp/$filename-${n}.yml"
+#         "perl ~/llj/blast_set/deal_yml.pl -f input/$filename -y tmp/$filename-${n}.yml --get_no_match -o tmp/$filename-${n}.no.yml"    
+#         "perl ~/llj/blast_set/extract_seq.pl -f input/$filename -y tmp/$filename-${n}.no.yml -o tmp/$filename.out.fa"
 
-    else 
-        "perl ~/llj/blast_set/process_blast.pl -i tmp/$filename.out.fa -d database/database1/${n}/${n}.fa -o tmp/$filename-${n}.txt"
-        "perl ~/llj/blast_set/read_blast_to_yml.pl -i tmp/$filename-${n}.txt --length 30 --identity 90 -o tmp/$filename-${n}.yml"
-        "perl ~/llj/blast_set/deal_yml.pl -f input/$filename -y tmp/$filename-${n}.yml --get_no_match -o tmp/$filename-${n}.no.yml"    
-        "perl ~/llj/blast_set/extract_seq.pl -f input/$filename -y tmp/$filename-${n}.no.yml -o tmp/$filename.out.fa"
-    fi   
-    if [ ! -s "tmp/$filename.out.fa" ]; then
-        echo "${n}中存在共有序列"
-        break  # 结束 for 循环
-    fi  
-done
+#     else 
+#         "perl ~/llj/blast_set/process_blast.pl -i tmp/$filename.out.fa -d database/database1/${n}/${n}.fa -o tmp/$filename-${n}.txt"
+#         "perl ~/llj/blast_set/read_blast_to_yml.pl -i tmp/$filename-${n}.txt --length 30 --identity 90 -o tmp/$filename-${n}.yml"
+#         "perl ~/llj/blast_set/deal_yml.pl -f input/$filename -y tmp/$filename-${n}.yml --get_no_match -o tmp/$filename-${n}.no.yml"    
+#         "perl ~/llj/blast_set/extract_seq.pl -f input/$filename -y tmp/$filename-${n}.no.yml -o tmp/$filename.out.fa"
+#     fi   
+#     if [ ! -s "tmp/$filename.out.fa" ]; then
+#         echo "${n}中存在共有序列"
+#         break  # 结束 for 循环
+#     fi  
+# done
+# ========================================================================================================================
+
 
 
 cd ~/llj/blast_set/Candida
@@ -183,7 +180,9 @@ for i in $(ls input/x*);do
 
 done
 
+###7.13号四种念珠菌和base-all数据库比对完成
 
+Can_alb  candida比对完成
 
 
 
